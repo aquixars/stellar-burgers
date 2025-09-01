@@ -10,15 +10,15 @@ export const AppHeader = () => {
             <p className='text text_type_main-default ml-2 mr-10'>
                 Конструктор
             </p>
-          <ListIcon type={'primary'} />
-            <p className='text text_type_main-default ml-2'>Лента заказов</p>
+          <ListIcon type={'secondary'} />
+            <p className={`text text_type_main-default ml-2 ${styles.text_secondary}`}>Лента заказов</p>
         </div>
         <div className={styles.logo}>
           <Logo />
         </div>
         <div className={styles.profile}>
-          <ProfileIcon type={'primary'} />
-          <p className='text text_type_main-default ml-2'>Личный кабинет</p>
+          <ProfileIcon type={'secondary'} />
+          <p className={`text text_type_main-default ml-2 ${styles.text_secondary}`}>Личный кабинет</p>
         </div>
       </nav>
     </header>
