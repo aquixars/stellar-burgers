@@ -1,0 +1,18 @@
+.header {
+  background-color: var(--background);
+}
+
+.first_third_part {
+  display: flex;
+  flex-basis: 33%;
+}
+
+.logo, .profile, .menu {
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.menu {
+  max-width: 1240px;
+}
