@@ -1,0 +1,62 @@
+.burgerConstructorRoot {
+    composes: pt-25 from global;
+
+    width: 100%;
+    flex-direction: column;
+    display: flex;
+}
+
+.ingredientContainer {
+    width: 100%;
+    justify-content: flex-end;
+    display: flex;
+    box-sizing: border-box;
+    margin-left: auto;
+}
+
+.scrollbarPaddingRight {
+    /* добавляем отступ как от скролл-бара */
+    padding-right: 22px;
+}
+
+.fillingsAndSaucesList {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 16px 0;
+    list-style: none;
+    padding: 0 8px 0 16px;
+    max-height: 657px;
+    overflow-y: auto;
+}
+
+.fillingsAndSaucesListItem {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.fillingsAndSaucesListItem:not(:last-child) {
+    margin-bottom: 16px;
+}
+
+.dragButton {
+    border: none;
+    margin: 0 8px 0 0;
+    padding: 0;
+    background: none;
+}
+
+.orderInfoContainer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.totalPrice {
+    display: flex;
+    align-items: center;
+}
+
+.totalPrice svg {
+    width: 36px;
+    height: 36px;
+}

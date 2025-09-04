@@ -1,22 +1,39 @@
-.header {
-  background-color: var(--background);
+.headerRoot {
+    composes: pt-4 pb-4 pr-5 pl-5 from global;
+
+    position: relative;
+    max-width: 1280px;
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    margin: 0 auto;
+    align-items: center;
 }
 
-.first_third_part {
-  display: flex;
-  flex-basis: 33%;
+.logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
-.logo, .profile, .menu {
-  display: flex;
-  align-items: center;
-  margin: 0 auto;
+.buttonBlock {
+    composes: pr-5 pl-5 pt-4 pb-4 mr-2 from global;
+
+    align-items: center;
+    border-radius: 40px;
+    text-decoration: none;
+    display: flex;
 }
 
-.menu {
-  max-width: 1240px;
+.colorWhite {
+    color: white;
 }
 
-.text_secondary {
-  color: rgb(133, 133, 173);
+.colorPurple {
+    color: #8585ad;
+}
+
+.mla {
+    margin-left: auto;
 }

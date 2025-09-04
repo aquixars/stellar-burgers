@@ -1,0 +1,14 @@
+.root {
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main {
+    composes: pl-5 pr-5 pb-10 from global;
+    max-width: 1280px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    display: flex;
+    max-height: calc(100vh - 82px); /* 82px – высота хэдера */
+}
