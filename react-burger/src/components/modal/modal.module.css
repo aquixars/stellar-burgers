@@ -1,25 +1,24 @@
-.modal {
+.root {
     width: 100vw;
     height: 100vh;
     top: 0;
     left: 0;
+
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
+
+    visibility: hidden;
+    opacity: 0;
     transition:
         opacity 300ms,
         visibility 300ms;
 }
 
-.openModal {
+.root_open {
     visibility: visible;
     opacity: 1;
-}
-
-.closedModal {
-    visibility: hidden;
-    opacity: 0;
 }
 
 .content {
@@ -29,6 +28,7 @@
     position: relative;
     background: #1c1c21;
     box-sizing: border-box;
+
     display: flex;
     flex-direction: column;
 }
@@ -46,4 +46,44 @@
 
 .closeButton:hover {
     opacity: 0.7;
+}
+
+.image {
+    align-self: center;
+    width: 480px;
+    height: 240px;
+    display: block;
+}
+
+.title {
+    align-self: center;
+    text-align: center;
+    max-width: 520px;
+}
+
+.nutritionFacts {
+    width: 100%;
+    max-width: 520px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    align-self: center;
+    justify-content: center;
+}
+
+.nutritionFact {
+    width: 112px;
+}
+
+.nutritionFact_size_l {
+    width: 127px;
+}
+
+.nutritionFact:not(:last-child) {
+    margin-right: 20px;
+}
+
+.nutritionText {
+    text-align: center;
 }

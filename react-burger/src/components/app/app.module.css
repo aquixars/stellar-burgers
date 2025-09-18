@@ -4,7 +4,7 @@
     flex-direction: column;
 }
 
-.main {
+.burgerContainer {
     composes: pl-5 pr-5 pb-10 from global;
     max-width: 1280px;
     box-sizing: border-box;

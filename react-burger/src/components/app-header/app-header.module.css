@@ -1,13 +1,13 @@
-.headerRoot {
+.root {
     composes: pt-4 pb-4 pr-5 pl-5 from global;
 
     position: relative;
-    max-width: 1280px;
-    width: 100%;
     min-height: 50px;
-    display: flex;
+    max-width: 1280px;
     margin: 0 auto;
+    display: flex;
     align-items: center;
+    width: 100%;
 }
 
 .logo {
@@ -17,23 +17,20 @@
     transform: translate(-50%, -50%);
 }
 
-.buttonBlock {
+.link {
     composes: pr-5 pl-5 pt-4 pb-4 mr-2 from global;
 
-    align-items: center;
-    border-radius: 40px;
     text-decoration: none;
     display: flex;
-}
-
-.colorWhite {
-    color: white;
-}
-
-.colorPurple {
+    align-items: center;
+    border-radius: 40px;
     color: #8585ad;
 }
 
-.mla {
+.link_active {
+    color: white;
+}
+
+.link_right {
     margin-left: auto;
 }

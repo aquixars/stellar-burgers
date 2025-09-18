@@ -1,82 +1,78 @@
-import { Button, ConstructorElement, CurrencyIcon, DragIcon } from "@ya.praktikum/react-developer-burger-ui-components";
+import cn from "classnames";
+import React from "react";
+import { Button, CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
+
+import Ingredient from "./components/ingredient/ingredient";
+import Modal from "../modal/modal";
+import OrderDetails from "../order-details/order-details";
+import { useAppDispatch, useAppSelector } from "../../services/hooks";
+import { addIngredient, selectBun, selectMains, selectPrice } from "../../services/slices/ingredients";
 import styles from "./burger-constructor.module.css";
-import { BurgerIngredient } from "../../models/burger-ingredient";
+import {
+    fetchOrder,
+    openOrderPopup,
+    closeOrderPopup,
+    selectIsOrderPopupOpen,
+    selectOrderDetails,
+    selectOrderLoading
+} from "../../services/slices/order";
+import { useDrop } from "react-dnd";
 
-const countPrice = (bun: BurgerIngredient, fillingsAndSauces: BurgerIngredient[]) => {
-    return fillingsAndSauces
-        .map((ing) => ing.price)
-        .reduce((ing, acc) => {
-            acc = acc + ing;
-            return acc;
-        }, bun.price);
+const BurgerConstructor = () => {
+    const dispatch = useAppDispatch();
+
+    const bun = useAppSelector(selectBun);
+    const mains = useAppSelector(selectMains);
+    const price = useAppSelector(selectPrice);
+    const orderDetails = useAppSelector(selectOrderDetails);
+    const orderLoading = useAppSelector(selectOrderLoading);
+    const isOrderPopupOpen = useAppSelector(selectIsOrderPopupOpen);
+
+    const [{ isHover }, dropTarget] = useDrop({
+        accept: "ingredient-from-menu",
+        collect: (monitor) => ({
+            isHover: monitor.isOver()
+        }),
+        drop(item: any) {
+            dispatch(addIngredient(item.id));
+        }
+    });
+
+    const onOrderSubmit = () => {
+        if (!bun || orderLoading) return;
+        const ingredientsIds = [bun, ...mains].map((ingredient) => ingredient._id);
+        dispatch(fetchOrder(ingredientsIds)).then(() => dispatch(openOrderPopup()));
+    };
+
+    const onClose = () => dispatch(closeOrderPopup());
+
+    return (
+        <section className={cn(styles.root, "ml-10", { [styles.root_over]: isHover })} ref={dropTarget as any}>
+            {bun && <Ingredient bun position="top" {...bun} />}
+            <ul className={cn(styles.list, "custom-scroll")}>
+                {mains.map((item) => (
+                    <Ingredient {...item} key={item._id} />
+                ))}
+            </ul>
+            {bun && <Ingredient bun position="bottom" {...bun} />}
+
+            <div style={{ marginTop: "auto" }}>
+                <div className={cn(styles.results, "mt-10")}>
+                    <p className={cn(styles.totalCost, "mr-10")}>
+                        <span className="text text_type_digits-medium mr-2">{price}</span>
+                        <CurrencyIcon type="primary" />
+                    </p>
+                    <Button htmlType="button" type="primary" size="large" onClick={onOrderSubmit}>
+                        {orderLoading ? "Загрузка..." : "Оформить заказ"}
+                    </Button>
+                </div>
+            </div>
+
+            <Modal open={isOrderPopupOpen} onClose={onClose}>
+                <OrderDetails {...orderDetails} />
+            </Modal>
+        </section>
+    );
 };
-
-interface IBurgerConstructorProps {
-    bun: BurgerIngredient;
-    fillingsAndSauces: BurgerIngredient[];
-    onIngredientClick: (id: string) => void;
-    handlePlaceOrderClick: () => void;
-}
-
-const BurgerConstructor = (props: IBurgerConstructorProps) => (
-    <section className={`ml-10 ${styles.burgerConstructorRoot}`}>
-        {/* верхняя булка */}
-        <div
-            className={`${styles.ingredientContainer} ${styles.scrollbarPaddingRight}`}
-            onClick={() => props.onIngredientClick(props.bun._id)}>
-            <ConstructorElement
-                type="top"
-                isLocked={true}
-                text={`${props.bun.name} (верх)`}
-                price={props.bun.price}
-                thumbnail={props.bun.image}
-            />
-        </div>
-
-        {/* начинки и соусы внутри списка со скроллом */}
-        <ul className={`custom-scroll ${styles.fillingsAndSaucesList}`}>
-            {props.fillingsAndSauces.map((item, idx) => (
-                <li className={styles.fillingsAndSaucesListItem} key={idx}>
-                    <button className={styles.dragButton}>
-                        <DragIcon type="primary" />
-                    </button>
-
-                    <div className={styles.ingredientContainer} onClick={() => props.onIngredientClick(item._id)}>
-                        <ConstructorElement text={item.name} price={item.price} thumbnail={item.image} />
-                    </div>
-                </li>
-            ))}
-        </ul>
-
-        {/* нижняя булка */}
-        <div
-            className={`${styles.ingredientContainer} ${styles.scrollbarPaddingRight}`}
-            onClick={() => props.onIngredientClick(props.bun._id)}>
-            <ConstructorElement
-                type="bottom"
-                isLocked={true}
-                text={`${props.bun.name} (низ)`}
-                price={props.bun.price}
-                thumbnail={props.bun.image}
-            />
-        </div>
-
-        <div className={`mt-10 ${styles.orderInfoContainer}`}>
-            {/* сумма заказа */}
-            <p className={`mr-10 ${styles.totalPrice}`}>
-                <span className="text text_type_digits-medium mr-2">
-                    {countPrice(props.bun, props.fillingsAndSauces)}
-                </span>
-
-                <CurrencyIcon type="primary" />
-            </p>
-
-            {/* кнопка оформления заказа */}
-            <Button type="primary" size="large" htmlType="button" onClick={props.handlePlaceOrderClick}>
-                Оформить заказ
-            </Button>
-        </div>
-    </section>
-);
 
 export default BurgerConstructor;
