@@ -7,13 +7,17 @@ export const getResponseData = (res: Response) => {
     return Promise.reject(new Error(`Ошибка: ${res.status}`));
 };
 
-export const getIngredients = () => fetch(`${API_URL}/ingredients`).then(getResponseData);
+function request(url: string, options: any) {
+    return fetch(url, options).then(getResponseData);
+}
 
 export const postOrder = (ingredients: { ingredients: string[] }) =>
-    fetch(`${API_URL}/orders`, {
+    request(`${API_URL}/orders`, {
         body: JSON.stringify(ingredients),
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         }
-    }).then(getResponseData);
+    });
+
+export const getIngredients = () => request(`${API_URL}/ingredients`, {});
