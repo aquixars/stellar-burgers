@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IngredientType, TIngredient } from "../../components/app/app.typed";
 import { getIngredients } from "../../utils/api";
 import { RootState } from "../store";
+import { v4 as uuidv4 } from "uuid";
 
 /** Тип ответа сервера при запросе ингредиентов. */
 type TIngredientResponse = PayloadAction<{
@@ -21,7 +22,7 @@ interface IIngredientsState {
     // constructor
     constructor: {
         bun: null | TIdWithQty;
-        mains: TIdWithQty[];
+        mains: (TIdWithQty & { uniqueId: string })[]; // Добавляем поле uniqueId
         price: number;
     };
     dragging: string;
@@ -47,7 +48,7 @@ const initialState: IIngredientsState = {
 const countPrice = (state: IIngredientsState) => {
     const ingredientsToCount = [...state.constructor.mains];
     if (state.constructor.bun) {
-        ingredientsToCount.push(state.constructor.bun);
+        ingredientsToCount.push(state.constructor.bun as any);
     }
 
     return ingredientsToCount.reduce((acc, item) => {
@@ -76,69 +77,42 @@ export const ingredients = createSlice({
         },
 
         // взаимодействие с конструктором
-        addIngredient: (state, action: PayloadAction<string>) => {
-            const ingredient = state.ingredients.find((i) => i._id === action.payload);
-            if (!ingredient) return;
+        addIngredient: {
+            reducer: (state, action: PayloadAction<{ id: string; uniqueId?: string }>) => {
+                const ingredient = state.ingredients.find((i) => i._id === action.payload.id);
+                if (!ingredient) return;
 
-            if (ingredient.type === IngredientType.BUN) {
-                state.constructor.bun = { id: action.payload, qty: 2 };
+                if (ingredient.type === IngredientType.BUN) {
+                    state.constructor.bun = { id: action.payload.id, qty: 2 };
+                } else {
+                    const uniqueId = action.payload.uniqueId || uuidv4();
+                    state.constructor.mains.push({
+                        id: action.payload.id,
+                        qty: 1,
+                        uniqueId
+                    });
+                }
                 state.constructor.price = countPrice(state);
-
-                return;
+            },
+            prepare: (id: string) => {
+                return { payload: { id, uniqueId: uuidv4() } };
             }
-
-            const existingIngredientIndex = state.constructor.mains.findIndex((i) => i.id === action.payload);
-            if (existingIngredientIndex !== -1) {
-                // если ингредиент найден в конструкторе, увеличим его qty
-                state.constructor.mains = state.constructor.mains.map((i) =>
-                    i.id === action.payload ? { ...i, qty: i.qty + 1 } : i
-                );
-            } else {
-                // иначе добавим ингредиент
-                state.constructor.mains.push({ id: action.payload, qty: 1 });
-            }
-
-            state.constructor.price = countPrice(state);
         },
         deleteIngredient: (state, action: PayloadAction<string>) => {
-            const ingredient = state.ingredients.find((i) => i._id === action.payload);
-            if (!ingredient || ingredient.type === IngredientType.BUN) return;
-
-            const deletingIngredientIndex = state.constructor.mains.findIndex((i) => i.id === action.payload);
-            if (deletingIngredientIndex === -1) return;
-
-            const deletingIngredient = state.constructor.mains[deletingIngredientIndex];
-            if (deletingIngredient.qty > 1) {
-                deletingIngredient.qty -= 1;
-            } else {
-                state.constructor.mains = state.constructor.mains.filter((i) => i.id !== action.payload);
-            }
-
+            state.constructor.mains = state.constructor.mains.filter((item) => item.uniqueId !== action.payload);
             state.constructor.price = countPrice(state);
         },
         setDragging: (state, action: PayloadAction<string>) => {
             state.dragging = action.payload;
         },
         swapIngredients: (state, action: PayloadAction<string>) => {
-            const draggingIndex = [...state.constructor.mains].findIndex((ing) => ing.id === state.dragging);
-            const hoveredIndex = [...state.constructor.mains].findIndex((ing) => ing.id === action.payload);
+            const dragIndex = [...state.constructor.mains].findIndex((ing) => ing.uniqueId === state.dragging);
+            const hoverIndex = state.constructor.mains.findIndex((item) => item.uniqueId === action.payload);
 
-            const initial = [...state.constructor.mains];
-
-            if (draggingIndex > hoveredIndex) {
-                state.constructor.mains = [
-                    ...initial.slice(0, draggingIndex - 1),
-                    initial[draggingIndex],
-                    initial[hoveredIndex],
-                    ...initial.slice(draggingIndex + 1)
-                ];
-            } else if (draggingIndex < hoveredIndex) {
-                state.constructor.mains = [
-                    ...initial.slice(0, hoveredIndex - 1),
-                    initial[hoveredIndex],
-                    initial[draggingIndex],
-                    ...initial.slice(hoveredIndex + 1)
-                ];
+            if (dragIndex > -1 && hoverIndex > -1) {
+                const temp = state.constructor.mains[dragIndex];
+                state.constructor.mains[dragIndex] = state.constructor.mains[hoverIndex];
+                state.constructor.mains[hoverIndex] = temp;
             }
         }
     },
@@ -176,7 +150,11 @@ export const selectBun = (state: RootState) => {
 export const selectMains = (state: RootState) => {
     return state.ingredients.constructor.mains.map((main) => {
         const foundIngredient = state.ingredients.ingredients.find((ingredient) => ingredient._id === main.id)!;
-        return { ...foundIngredient, count: main.qty };
+        return {
+            ...foundIngredient,
+            count: main.qty,
+            uniqueId: main.uniqueId
+        };
     });
 };
 export const selectPrice = (state: RootState) => {
@@ -188,11 +166,11 @@ export const selectIngredientQty = (id: string) => (state: RootState) => {
 
     if (ingredient.type === IngredientType.BUN) {
         const bun = state.ingredients.constructor.bun;
-        return bun && bun.id === id ? bun.qty : 0;
+        return bun && bun.id === id ? 2 : 0;
     }
 
-    const main = state.ingredients.constructor.mains.find((i) => i.id === id);
-    return main ? main.qty : 0;
+    const main = state.ingredients.constructor.mains.filter((i) => i.id === id);
+    return main ? main.length : 0;
 };
 
 const { actions, reducer } = ingredients;

@@ -16,12 +16,13 @@ import { useEffect } from "react";
 interface IIngredient extends TIngredientWithCount {
     bun?: boolean;
     position?: "top" | "bottom";
+    uniqueId?: string;
 }
 
 const Ingredient = (props: IIngredient) => {
     const dispatch = useAppDispatch();
 
-    const onDeleteClick = () => dispatch(deleteIngredient(props._id));
+    const onDeleteClick = () => dispatch(deleteIngredient(props.uniqueId ?? ""));
     const onIngredientClick = () => dispatch(openDetailsPopup(props._id));
     const { containerRef, onClick } = useOnIngredientClick(onIngredientClick);
 
@@ -47,13 +48,13 @@ const Ingredient = (props: IIngredient) => {
 
     useEffect(() => {
         if (isDragging) {
-            dispatch(setDragging(props._id));
+            dispatch(setDragging(props.uniqueId ?? ""));
         }
     }, [isDragging]);
 
     useEffect(() => {
         if (isHover && (target as any).id !== props._id) {
-            dispatch(swapIngredients(props._id));
+            dispatch(swapIngredients(props.uniqueId ?? ""));
         }
     }, [isHover, target]);
 

@@ -14,6 +14,10 @@
     composes: mb-5 from global;
 }
 
+.displayFlex {
+    display: flex;
+}
+
 .ingredientsList {
     composes: pl-4 pr-4 from global;
 

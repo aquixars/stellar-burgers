@@ -15,7 +15,7 @@ interface IOrderDetails {
 const OrderDetails = (props: IOrderDetails) => (
     <>
         <div className={styles.root}>
-            <h1 className={cn("text text_type_digits-large pt-20 pb-8")}>{props.order.number}</h1>
+            <h2 className={cn("text text_type_digits-large pt-20 pb-8")}>{props.order.number}</h2>
             <p className="text text_type_main-medium pb-15">идентификатор заказа</p>
             <img className="pb-15" src={iconAccepted} alt="Иконка успеха" />
             <p className="text text_type_main-default pb-2">Ваш заказ начали готовить</p>

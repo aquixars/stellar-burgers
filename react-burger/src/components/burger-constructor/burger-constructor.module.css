@@ -23,6 +23,10 @@
     overflow-y: auto;
 }
 
+.marginTopAuto {
+    margin-top: auto;
+}
+
 .item {
     width: 100%;
     display: flex;

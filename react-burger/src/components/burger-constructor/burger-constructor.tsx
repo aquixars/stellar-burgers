@@ -6,7 +6,13 @@ import Ingredient from "./components/ingredient/ingredient";
 import Modal from "../modal/modal";
 import OrderDetails from "../order-details/order-details";
 import { useAppDispatch, useAppSelector } from "../../services/hooks";
-import { addIngredient, selectBun, selectMains, selectPrice } from "../../services/slices/ingredients";
+import {
+    addIngredient,
+    selectBun,
+    selectIngredients,
+    selectMains,
+    selectPrice
+} from "../../services/slices/ingredients";
 import styles from "./burger-constructor.module.css";
 import {
     fetchOrder,
@@ -51,12 +57,12 @@ const BurgerConstructor = () => {
             {bun && <Ingredient bun position="top" {...bun} />}
             <ul className={cn(styles.list, "custom-scroll")}>
                 {mains.map((item) => (
-                    <Ingredient {...item} key={item._id} />
+                    <Ingredient {...item} key={item.uniqueId} />
                 ))}
             </ul>
             {bun && <Ingredient bun position="bottom" {...bun} />}
 
-            <div style={{ marginTop: "auto" }}>
+            <div className={styles.marginTopAuto}>
                 <div className={cn(styles.results, "mt-10")}>
                     <p className={cn(styles.totalCost, "mr-10")}>
                         <span className="text text_type_digits-medium mr-2">{price}</span>
