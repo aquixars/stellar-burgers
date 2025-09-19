@@ -1,11 +1,11 @@
 import React, { SyntheticEvent, useRef } from "react";
 import styles from "./modal-overlay.module.css";
 
-interface IModalOverlayProps {
+interface IModalOverlay {
     onClose: () => void;
 }
 
-const ModalOverlay = (props: IModalOverlayProps) => {
+const ModalOverlay = (props: IModalOverlay) => {
     const overlayRef = useRef<HTMLDivElement>(null);
 
     const handleClick = (evt: SyntheticEvent) => {
@@ -14,7 +14,7 @@ const ModalOverlay = (props: IModalOverlayProps) => {
         }
     };
 
-    return <div className={styles.modalOverlayRoot} onClick={handleClick} ref={overlayRef} />;
+    return <div className={styles.root} onClick={handleClick} ref={overlayRef} />;
 };
 
 export default ModalOverlay;

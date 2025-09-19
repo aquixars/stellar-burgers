@@ -1,62 +1,76 @@
-.burgerConstructorRoot {
+.root {
     composes: pt-25 from global;
-
     width: 100%;
+
+    display: flex;
     flex-direction: column;
-    display: flex;
+    min-width: 595px;
+    border: 1px solid var(--background-alt);
 }
 
-.ingredientContainer {
+.root_over {
+    border-color: #7b1fbb;
+}
+
+.list {
     width: 100%;
-    justify-content: flex-end;
-    display: flex;
-    box-sizing: border-box;
-    margin-left: auto;
-}
-
-.scrollbarPaddingRight {
-    /* добавляем отступ как от скролл-бара */
-    padding-right: 22px;
-}
-
-.fillingsAndSaucesList {
-    width: 100%;
-    box-sizing: border-box;
+    min-height: 80px;
     margin: 16px 0;
-    list-style: none;
     padding: 0 8px 0 16px;
+    list-style: none;
+    box-sizing: border-box;
     max-height: 657px;
     overflow-y: auto;
 }
 
-.fillingsAndSaucesListItem {
+.marginTopAuto {
+    margin-top: auto;
+}
+
+.item {
     width: 100%;
     display: flex;
     align-items: center;
 }
 
-.fillingsAndSaucesListItem:not(:last-child) {
+.listItem:not(:last-child) {
     margin-bottom: 16px;
 }
 
-.dragButton {
-    border: none;
+.ingredientContainer {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-left: auto;
+    box-sizing: border-box;
+}
+
+.ingredientContainer_outter {
+    width: 100%;
+}
+
+.ingredientContainer_outter > div {
+    max-width: initial;
+}
+
+.button {
     margin: 0 8px 0 0;
     padding: 0;
+    border: none;
     background: none;
 }
 
-.orderInfoContainer {
+.results {
     display: flex;
     justify-content: flex-end;
 }
 
-.totalPrice {
+.totalCost {
     display: flex;
     align-items: center;
 }
 
-.totalPrice svg {
+.totalCost svg {
     width: 36px;
     height: 36px;
 }

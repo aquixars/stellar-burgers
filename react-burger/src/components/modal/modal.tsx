@@ -1,52 +1,39 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
+import cn from "classnames";
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 
 import ModalOverlay from "../modal-overlay/modal-overlay";
 import styles from "./modal.module.css";
 
-const modalRoot = document.getElementById("modals")!;
+const modalRoot = document.getElementById("react-modals")!;
 
-interface IModalProps {
-    isOpen: boolean;
+interface IModal {
+    open: boolean;
     onClose: () => void;
     children: React.ReactNode;
 }
 
-const Modal = (props: IModalProps) => {
-    const onEscKeydown = useCallback(
-        (evt: KeyboardEvent) => {
+const Modal = (props: IModal) => {
+    useEffect(() => {
+        const onEscKeydown = (evt: KeyboardEvent) => {
             if (evt.key === "Escape") {
                 props.onClose();
             }
-        },
-        [props]
-    );
-
-    useEffect(() => {
+        };
         document.addEventListener("keydown", onEscKeydown);
 
-        return () => {
-            document.removeEventListener("keydown", onEscKeydown);
-        };
-    }, [onEscKeydown]);
+        return () => document.removeEventListener("keydown", onEscKeydown);
+    }, [props]);
 
     return ReactDOM.createPortal(
         <>
-            <div
-                className={
-                    props.isOpen ? `${styles.modal} ${styles.openModal}` : `${styles.modal} ${styles.closedModal}`
-                }>
-                {/* оверлей */}
+            <div className={cn(styles.root, { [styles.root_open]: props.open })}>
                 <ModalOverlay onClose={props.onClose} />
-
                 <div className={styles.content}>
-                    {/* кнопка закрытия */}
                     <button className={styles.closeButton} onClick={props.onClose}>
                         <CloseIcon type="primary" />
                     </button>
-
-                    {/* содержимое модалки */}
                     {props.children}
                 </div>
             </div>
