@@ -18,6 +18,7 @@ import {
     refreshToken,
     getUser
 } from "../../services/slices/user";
+import AppHeader from "../app-header/app-header";
 
 type LocState = { background?: Location } | null;
 
@@ -29,21 +30,9 @@ const App = () => {
     const state = (location.state as LocState) || null;
     const background = state?.background;
 
-    const isAuth = useAppSelector(selectIsAuthenticated);
-    const canReset = useAppSelector(selectCanResetPassword);
-
     const isAuthenticated = useAppSelector(selectIsAuthenticated);
     const canResetPassword = useAppSelector(selectCanResetPassword);
     const authReady = useAppSelector(selectAuthInitialized);
-
-    useEffect(() => {
-        (async () => {
-            await dispatch(fetchIngredients());
-            const rt = await dispatch(refreshToken());
-            if (refreshToken.fulfilled.match(rt)) dispatch(getUser());
-            // флаг authInitialized выставится в extraReducers
-        })();
-    }, [dispatch]);
 
     useEffect(() => {
         (async () => {
@@ -57,6 +46,8 @@ const App = () => {
 
     return (
         <>
+            <AppHeader />
+
             {/* СТРАНИЦЫ */}
             <Routes location={background || location}>
                 <Route path="/" element={<Main />} />
@@ -101,6 +92,8 @@ const App = () => {
                 </Route>
 
                 <Route path="*" element={<NotFound />} />
+
+                <Route path="/ingredients/:id" element={<IngredientDetails />} />
             </Routes>
 
             {/* ПОПАПЫ — рендерим только если есть background */}

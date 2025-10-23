@@ -1,4 +1,3 @@
-// src/components/form/hint.tsx
 import cn from "classnames";
 import React from "react";
 import { Link } from "react-router-dom";

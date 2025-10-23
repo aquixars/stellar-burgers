@@ -1,4 +1,3 @@
-// src/pages/forgot-password/forgot-password.tsx
 import { Input } from "@ya.praktikum/react-developer-burger-ui-components";
 import React from "react";
 import Form, { Hint, InputContainer, Submit, Title } from "../../components/form";

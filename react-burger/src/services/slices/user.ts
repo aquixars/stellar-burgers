@@ -33,7 +33,7 @@ const initialState: IUserState = {
     loading: false,
     error: false,
 
-    // неавторизованный пользователя не может зайти на /reset-password,
+    // неавторизованный пользователь не может зайти на /reset-password,
     // минуя /forgot-password
     canResetPassword: false,
     authInitialized: false
@@ -121,7 +121,6 @@ export const patchUser = createAsyncThunk<TUser, TUser, { state: RootState; disp
             if (err.message === "jwt expired" || err.message === "wtf") {
                 const result = await thunkAPI.dispatch(refreshToken());
                 if (refreshToken.fulfilled.match(result)) {
-                    // логичнее повторить исходный запрос, а не getUser:
                     const { accessToken: newToken } = (result as any).payload;
                     const retried = await api.patchUser(newToken, data);
                     return retried.user;
@@ -152,13 +151,13 @@ export const user = createSlice({
             state.loading = false;
             state.accessToken = action.payload.accessToken;
             state.isAuthenticated = true;
-            state.authInitialized = true; // <--- отметили инициализацию
+            state.authInitialized = true;
         });
         builder.addCase(refreshToken.rejected, (state) => {
             state.loading = false;
             state.error = true;
             state.isAuthenticated = false;
-            state.authInitialized = true; // <--- инициализация завершена даже при провале
+            state.authInitialized = true;
         });
 
         // Логин/логаут тоже должны выставлять флаг
@@ -167,18 +166,18 @@ export const user = createSlice({
             state.accessToken = action.payload.accessToken;
             state.user = action.payload.user;
             state.isAuthenticated = true;
-            state.authInitialized = true; // <---
+            state.authInitialized = true;
         });
         builder.addCase(register.fulfilled, (state, action) => {
             state.loading = false;
             state.accessToken = action.payload.accessToken;
             state.user = action.payload.user;
             state.isAuthenticated = true;
-            state.authInitialized = true; // <---
+            state.authInitialized = true;
         });
         builder.addCase(logout.fulfilled, () => ({
             ...initialState,
-            authInitialized: true // <--- чтобы после логаута роутер не «ждал»
+            authInitialized: true
         }));
     }
 });

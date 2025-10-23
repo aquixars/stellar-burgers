@@ -1,4 +1,3 @@
-// src/components/ingredient-details/ingredient-details.tsx
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useAppSelector } from "../../services/hooks";
@@ -19,6 +18,9 @@ const IngredientDetails: React.FC = () => {
 
     return (
         <div className="p-10" style={{ textAlign: "center" }}>
+            <h3 style={{ textAlign: "center" }} className={"text text_type_main-large pt-3 pb-3"}>
+                Детали ингредиента
+            </h3>
             <img src={ing.image_large} alt={ing.name} />
             <h3 className="text text_type_main-medium mt-4">{ing.name}</h3>
 

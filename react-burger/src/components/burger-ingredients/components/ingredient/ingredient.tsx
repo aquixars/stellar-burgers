@@ -1,4 +1,3 @@
-// src/pages/burger-ingredients/components/ingredient/ingredient.tsx
 import styles from "../../burger-ingredients.module.css";
 import { Counter, CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import cn from "classnames";
