@@ -1,44 +1,18 @@
-import React, { useEffect } from "react";
-import IngredientDetails from "../../components/ingredient-details/ingredient-details";
-import { useAppDispatch, useAppSelector } from "../../services/hooks";
-import { selectIngredients, fetchIngredients, selectIngredientsLoading } from "../../services/slices/ingredients";
+import React from "react";
 import Layout from "../../components/layout/layout";
+import IngredientDetails from "../../components/ingredient-details/ingredient-details";
+import styles from "./ingredient.module.css";
+import classNames from "classnames";
 
-const CONTAINER_STYLE = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 120
-};
-
-const Ingredient: React.FC = () => {
-    const dispatch = useAppDispatch();
-
-    const ingredients = useAppSelector(selectIngredients);
-    const ingredientsLoading = useAppSelector(selectIngredientsLoading);
-
-    useEffect(() => {
-        // загрузить ингредиенты, если их нет
-        if (!ingredients.length) {
-            dispatch(fetchIngredients());
-        }
-    }, [ingredients]);
-
-    if (!ingredients.length || ingredientsLoading) {
-        return (
-            <Layout>
-                <h2 style={{ textAlign: "center" }}>Loading...</h2>
-            </Layout>
-        );
-    }
-
+const IngredientPage = () => {
     return (
         <Layout>
-            <div style={CONTAINER_STYLE}>
-                <IngredientDetails />
-            </div>
+            <h1 className={classNames(styles.textAlignCenter, "text text_type_main-large mt-10 mb-10")}>
+                Детали ингредиента
+            </h1>
+            <IngredientDetails /> {/* тот же компонент, что и в модалке */}
         </Layout>
     );
 };
 
-export default Ingredient;
+export default IngredientPage;

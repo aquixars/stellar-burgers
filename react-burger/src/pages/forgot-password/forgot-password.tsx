@@ -1,3 +1,4 @@
+// src/pages/forgot-password/forgot-password.tsx
 import { Input } from "@ya.praktikum/react-developer-burger-ui-components";
 import React from "react";
 import Form, { Hint, InputContainer, Submit, Title } from "../../components/form";
@@ -14,7 +15,6 @@ const ForgotPassword: React.FC = () => {
 
     const handleSubmit = async (evt: React.SyntheticEvent) => {
         evt.preventDefault();
-
         const resultAction = await dispatch(forgotPassword(email));
         if (forgotPassword.fulfilled.match(resultAction)) {
             dispatch(allowPasswordReset());

@@ -18,6 +18,7 @@ interface IUserState {
     error: boolean;
 
     canResetPassword: boolean;
+    authInitialized: boolean;
 }
 
 const initialState: IUserState = {
@@ -34,7 +35,8 @@ const initialState: IUserState = {
 
     // неавторизованный пользователя не может зайти на /reset-password,
     // минуя /forgot-password
-    canResetPassword: false
+    canResetPassword: false,
+    authInitialized: false
 };
 
 export const refreshToken = createAsyncThunk("user/refresh-token", () => {
@@ -142,36 +144,6 @@ export const user = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(register.pending, (state) => {
-            state.error = false;
-            state.loading = true;
-        });
-        builder.addCase(register.fulfilled, (state, action) => {
-            state.loading = false;
-            state.accessToken = action.payload.accessToken;
-            state.user = action.payload.user;
-            state.isAuthenticated = true;
-        });
-        builder.addCase(register.rejected, (state) => {
-            state.loading = false;
-            state.error = true;
-        });
-
-        builder.addCase(login.pending, (state) => {
-            state.error = false;
-            state.loading = true;
-        });
-        builder.addCase(login.fulfilled, (state, action) => {
-            state.loading = false;
-            state.accessToken = action.payload.accessToken;
-            state.user = action.payload.user;
-            state.isAuthenticated = true;
-        });
-        builder.addCase(login.rejected, (state) => {
-            state.loading = false;
-            state.error = true;
-        });
-
         builder.addCase(refreshToken.pending, (state) => {
             state.error = false;
             state.loading = true;
@@ -180,45 +152,34 @@ export const user = createSlice({
             state.loading = false;
             state.accessToken = action.payload.accessToken;
             state.isAuthenticated = true;
+            state.authInitialized = true; // <--- отметили инициализацию
         });
         builder.addCase(refreshToken.rejected, (state) => {
             state.loading = false;
             state.error = true;
+            state.isAuthenticated = false;
+            state.authInitialized = true; // <--- инициализация завершена даже при провале
         });
 
-        builder.addCase(logout.pending, (state) => {
-            state.error = false;
-            state.loading = true;
-        });
-        builder.addCase(logout.fulfilled, () => initialState);
-        builder.addCase(logout.rejected, (state) => {
+        // Логин/логаут тоже должны выставлять флаг
+        builder.addCase(login.fulfilled, (state, action) => {
             state.loading = false;
-            state.error = true;
+            state.accessToken = action.payload.accessToken;
+            state.user = action.payload.user;
+            state.isAuthenticated = true;
+            state.authInitialized = true; // <---
         });
-
-        builder.addCase(getUser.pending, (state) => {
-            state.error = false;
-            state.loading = true;
-        });
-        builder.addCase(getUser.fulfilled, (state, action) => {
-            state.user = action.payload;
-        });
-        builder.addCase(getUser.rejected, (state) => {
+        builder.addCase(register.fulfilled, (state, action) => {
             state.loading = false;
-            state.error = true;
+            state.accessToken = action.payload.accessToken;
+            state.user = action.payload.user;
+            state.isAuthenticated = true;
+            state.authInitialized = true; // <---
         });
-
-        builder.addCase(patchUser.pending, (state) => {
-            state.error = false;
-            state.loading = true;
-        });
-        builder.addCase(patchUser.fulfilled, (state, action) => {
-            state.user = action.payload;
-        });
-        builder.addCase(patchUser.rejected, (state) => {
-            state.loading = false;
-            state.error = true;
-        });
+        builder.addCase(logout.fulfilled, () => ({
+            ...initialState,
+            authInitialized: true // <--- чтобы после логаута роутер не «ждал»
+        }));
     }
 });
 
@@ -231,6 +192,7 @@ export const selectUser = (state: RootState) => {
 export const selectCanResetPassword = (state: RootState) => {
     return state.user.canResetPassword;
 };
+export const selectAuthInitialized = (state: RootState) => state.user.authInitialized;
 
 const { actions, reducer } = user;
 

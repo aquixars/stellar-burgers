@@ -1,3 +1,4 @@
+// src/pages/register/register.tsx
 import { Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
 import React from "react";
 import Form, { Hint, InputContainer, Submit, Title } from "../../components/form";
@@ -17,10 +18,9 @@ const Register: React.FC = () => {
     const handleSubmit = async (evt: React.SyntheticEvent) => {
         evt.preventDefault();
         const data = { name, email, password };
-
         const resultAction = await dispatch(register(data));
         if (register.fulfilled.match(resultAction)) {
-            navigate("/", { replace: true }); // v6
+            navigate("/", { replace: true });
         }
     };
 

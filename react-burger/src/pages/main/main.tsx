@@ -13,10 +13,6 @@ export const ANIMATION_DURATION = 300; // мс
 const Main: React.FC = () => {
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        dispatch(fetchIngredients());
-    }, [dispatch]);
-
     return (
         <DndProvider backend={HTML5Backend}>
             <Layout className={styles.root}>

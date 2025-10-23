@@ -5,6 +5,7 @@ import Form from "../../components/form/form";
 import { useAppDispatch } from "../../services/hooks";
 import { login } from "../../services/slices/user";
 import Layout from "../../components/layout/layout";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -14,9 +15,16 @@ const Login: React.FC = () => {
 
     const handleSubmit = async (evt: React.SyntheticEvent) => {
         evt.preventDefault();
-        const data = { email, password };
-        dispatch(login(data));
+        const res = await dispatch(login({ email, password }));
+        if (login.fulfilled.match(res)) {
+            navigate(from, { replace: true }); // вернёт туда, откуда попал на логин
+        }
     };
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const from = (location.state as any)?.from?.pathname || "/";
 
     return (
         <Layout>

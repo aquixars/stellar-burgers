@@ -1,27 +1,45 @@
-import cn from "classnames";
-import styles from "../modal/modal.module.css";
-import NutritionFacts from "./components/nutrition-facts/nutrition-facts";
+// src/components/ingredient-details/ingredient-details.tsx
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useAppSelector } from "../../services/hooks";
-import { selectIngredientById } from "../../services/slices/ingredients";
+import { selectIngredients } from "../../services/slices/ingredients";
 
-const IngredientDetails = () => {
-    const params = useParams<{ id: string }>();
+const IngredientDetails: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const items = useAppSelector(selectIngredients);
+    const ing = useMemo(() => items.find((i) => i._id === id), [items, id]);
 
-    const ingredient = useAppSelector(selectIngredientById(params.id!));
+    if (!items.length) {
+        return <p className="text text_type_main-default p-10">Загрузка...</p>;
+    }
 
-    if (!ingredient) {
-        return <div>Ingredient not found</div>;
+    if (!ing) {
+        return <p className="text text_type_main-default p-10">Ингредиент не найден</p>;
     }
 
     return (
-        <div>
-            <h1 style={{ textAlign: "center" }} className={"text text_type_main-large pt-3 pb-3"}>
-                Детали ингредиента
-            </h1>
-            <img className={styles.image} src={ingredient.image_large} alt={ingredient.name} />
-            <h2 className={cn("text text_type_main-medium pt-2 pb-8", styles.title)}>{ingredient.name}</h2>
-            <NutritionFacts {...ingredient} />
+        <div className="p-10" style={{ textAlign: "center" }}>
+            <img src={ing.image_large} alt={ing.name} />
+            <h3 className="text text_type_main-medium mt-4">{ing.name}</h3>
+
+            <ul className="mt-8" style={{ display: "flex", gap: 20, justifyContent: "center" }}>
+                <li>
+                    <p className="text text_type_main-default text_color_inactive">Калории, ккал</p>
+                    <p className="text text_type_digits-default">{ing.calories}</p>
+                </li>
+                <li>
+                    <p className="text text_type_main-default text_color_inactive">Белки, г</p>
+                    <p className="text text_type_digits-default">{ing.proteins}</p>
+                </li>
+                <li>
+                    <p className="text text_type_main-default text_color_inactive">Жиры, г</p>
+                    <p className="text text_type_digits-default">{ing.fat}</p>
+                </li>
+                <li>
+                    <p className="text text_type_main-default text_color_inactive">Углеводы, г</p>
+                    <p className="text text_type_digits-default">{ing.carbohydrates}</p>
+                </li>
+            </ul>
         </div>
     );
 };

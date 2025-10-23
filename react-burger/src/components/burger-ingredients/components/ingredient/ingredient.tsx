@@ -1,3 +1,4 @@
+// src/pages/burger-ingredients/components/ingredient/ingredient.tsx
 import styles from "../../burger-ingredients.module.css";
 import { Counter, CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import cn from "classnames";
@@ -11,21 +12,18 @@ interface IIngredient extends TIngredient {}
 
 const Ingredient = (props: IIngredient) => {
     const location = useLocation();
-    const ingredientCount = useAppSelector(selectIngredientQty(props._id));
+    const count = useAppSelector(selectIngredientQty(props._id));
 
-    const [, ref] = useDrag({
-        type: "ingredient-from-menu",
-        item: { id: props._id }
-    });
+    const [, ref] = useDrag({ type: "ingredient-from-menu", item: { id: props._id } });
 
     return (
         <Link
-            key={props._id}
             className={styles.link}
-            to={{ pathname: `/ingredients/${props._id}` }}
-            state={{ background: location }}>
+            to={`/ingredients/${props._id}`}
+            state={{ background: location }} // ключ: фон для модалки
+        >
             <div className={styles.burgerIngredient} ref={ref as any}>
-                {ingredientCount > 0 && <Counter count={ingredientCount} size="default" />}
+                {count > 0 && <Counter count={count} size="default" />}
                 <img className="pr-4 pl-4 mb-1" src={props.image} alt={props.name} />
                 <p className={styles.ingredientCost}>
                     <span className="text text_type_digits-default mr-2">{props.price}</span>{" "}

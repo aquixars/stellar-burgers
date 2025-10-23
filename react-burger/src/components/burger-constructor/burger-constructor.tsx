@@ -34,9 +34,7 @@ const BurgerConstructor = () => {
 
     const [{ isHover }, dropTarget] = useDrop({
         accept: "ingredient-from-menu",
-        collect: (monitor) => ({
-            isHover: monitor.isOver()
-        }),
+        collect: (monitor) => ({ isHover: monitor.isOver() }),
         drop(item: any) {
             dispatch(addIngredient(item.id));
         }
@@ -46,12 +44,14 @@ const BurgerConstructor = () => {
         if (!bun || orderLoading) return;
 
         if (!isAuthenticated) {
-            navigate("/login"); // v6
+            navigate("/login");
             return;
         }
 
-        const ingredientsIds = [bun, ...mains].map((ingredient) => ingredient._id);
-        dispatch(fetchOrder(ingredientsIds)).then(() => dispatch(openOrderPopup()));
+        const ingredientsIds = [bun, ...mains].map((i) => i._id);
+        dispatch(fetchOrder(ingredientsIds)).then(() => {
+            dispatch(openOrderPopup());
+        });
     };
 
     const onClose = () => dispatch(closeOrderPopup());
@@ -66,7 +66,7 @@ const BurgerConstructor = () => {
             </ul>
             {bun && <Ingredient bun position="bottom" {...bun} />}
 
-            <div style={{ marginTop: "auto" }}>
+            <div className={styles.footer}>
                 <div className={cn(styles.results, "mt-10")}>
                     <p className={cn(styles.totalCost, "mr-10")}>
                         <span className="text text_type_digits-medium mr-2">{price}</span>

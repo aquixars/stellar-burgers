@@ -20,7 +20,7 @@
 }
 
 .link_active {
-    color: white;
+    color: var(--text-primary, #f2f2f3);
 }
 
 .button {
