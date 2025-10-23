@@ -6,13 +6,7 @@ import Ingredient from "./components/ingredient/ingredient";
 import Modal from "../modal/modal";
 import OrderDetails from "../order-details/order-details";
 import { useAppDispatch, useAppSelector } from "../../services/hooks";
-import {
-    addIngredient,
-    selectBun,
-    selectIngredients,
-    selectMains,
-    selectPrice
-} from "../../services/slices/ingredients";
+import { addIngredient, selectBun, selectMains, selectPrice } from "../../services/slices/ingredients";
 import styles from "./burger-constructor.module.css";
 import {
     fetchOrder,
@@ -23,8 +17,11 @@ import {
     selectOrderLoading
 } from "../../services/slices/order";
 import { useDrop } from "react-dnd";
+import { selectIsAuthenticated } from "../../services/slices/user";
+import { useNavigate } from "react-router-dom";
 
 const BurgerConstructor = () => {
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     const bun = useAppSelector(selectBun);
@@ -33,6 +30,7 @@ const BurgerConstructor = () => {
     const orderDetails = useAppSelector(selectOrderDetails);
     const orderLoading = useAppSelector(selectOrderLoading);
     const isOrderPopupOpen = useAppSelector(selectIsOrderPopupOpen);
+    const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
     const [{ isHover }, dropTarget] = useDrop({
         accept: "ingredient-from-menu",
@@ -46,6 +44,12 @@ const BurgerConstructor = () => {
 
     const onOrderSubmit = () => {
         if (!bun || orderLoading) return;
+
+        if (!isAuthenticated) {
+            navigate("/login"); // v6
+            return;
+        }
+
         const ingredientsIds = [bun, ...mains].map((ingredient) => ingredient._id);
         dispatch(fetchOrder(ingredientsIds)).then(() => dispatch(openOrderPopup()));
     };
@@ -62,7 +66,7 @@ const BurgerConstructor = () => {
             </ul>
             {bun && <Ingredient bun position="bottom" {...bun} />}
 
-            <div className={styles.marginTopAuto}>
+            <div style={{ marginTop: "auto" }}>
                 <div className={cn(styles.results, "mt-10")}>
                     <p className={cn(styles.totalCost, "mr-10")}>
                         <span className="text text_type_digits-medium mr-2">{price}</span>

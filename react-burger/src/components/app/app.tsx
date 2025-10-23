@@ -1,52 +1,50 @@
-import React, { useEffect } from "react";
-
-import AppHeader from "../app-header/app-header";
-import BurgerIngredients from "../burger-ingredients/burger-ingredients";
-import BurgerConstructor from "../burger-constructor/burger-constructor";
-import Modal from "../modal/modal";
-import IngredientDetails from "../ingredient-details/ingredient-details";
-import styles from "./app.module.css";
-
+import React, { useEffect, useCallback } from "react";
+import { Routes, Route } from "react-router-dom";
+import { ForgotPassword, Ingredient, Login, Main, NotFound, Profile, Register, ResetPassword } from "../../pages";
+import OrdersFeed from "../../pages/orders-feed/orders-feed";
+import ProtectedRoute from "../protected-route/protected-route";
 import { useAppDispatch, useAppSelector } from "../../services/hooks";
-import {
-    closeDetailsPopup,
-    fetchIngredients,
-    resetActiveIngredient,
-    selectActiveIngredient,
-    selectIsDetailsPopupOpen
-} from "../../services/slices/ingredients";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-
-export const ANIMATION_DURATION = 300; // мс
+import { selectIsAuthenticated, getUser, refreshToken, selectCanResetPassword } from "../../services/slices/user";
 
 const App = () => {
     const dispatch = useAppDispatch();
-    const activeIngredient = useAppSelector(selectActiveIngredient);
-    const isDetailsPopupOpen = useAppSelector(selectIsDetailsPopupOpen);
+    const isAuthenticated = useAppSelector(selectIsAuthenticated);
+    const canResetPassword = useAppSelector(selectCanResetPassword);
 
-    useEffect(() => {
-        dispatch(fetchIngredients());
+    const handleLoad = useCallback(async () => {
+        try {
+            await dispatch(refreshToken());
+            dispatch(getUser());
+        } catch {}
     }, [dispatch]);
 
-    const onModalClose = () => {
-        dispatch(closeDetailsPopup());
-        setTimeout(() => dispatch(resetActiveIngredient()), ANIMATION_DURATION);
-    };
+    useEffect(() => {
+        handleLoad();
+    }, [handleLoad]);
 
     return (
-        <DndProvider backend={HTML5Backend}>
-            <div className={styles.root}>
-                <AppHeader />
-                <div className={styles.burgerContainer}>
-                    <BurgerIngredients />
-                    <BurgerConstructor />
-                    <Modal open={isDetailsPopupOpen} onClose={onModalClose}>
-                        {activeIngredient && <IngredientDetails ingredient={activeIngredient} />}
-                    </Modal>
-                </div>
-            </div>
-        </DndProvider>
+        <Routes>
+            <Route path="/" element={<Main />} />
+
+            <Route element={<ProtectedRoute isAllowed={!isAuthenticated} redirectionPath="/" />}>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+            </Route>
+
+            <Route element={<ProtectedRoute isAllowed={canResetPassword} redirectionPath="/" />}>
+                <Route path="/reset-password" element={<ResetPassword />} />
+            </Route>
+
+            <Route path="/ingredients/:id" element={<Ingredient />} />
+
+            <Route element={<ProtectedRoute isAllowed={isAuthenticated} redirectionPath="/login" />}>
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/orders" element={<OrdersFeed />} />
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+        </Routes>
     );
 };
 
