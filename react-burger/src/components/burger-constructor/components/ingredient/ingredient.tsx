@@ -12,6 +12,7 @@ import { useOnIngredientClick } from "./ingredient.utils";
 import cn from "classnames";
 import { useDrag, useDrop } from "react-dnd";
 import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 interface IIngredient extends TIngredientWithCount {
     bun?: boolean;
@@ -22,9 +23,8 @@ interface IIngredient extends TIngredientWithCount {
 const Ingredient = (props: IIngredient) => {
     const dispatch = useAppDispatch();
 
+    const location = useLocation();
     const onDeleteClick = () => dispatch(deleteIngredient(props.uniqueId ?? ""));
-    const onIngredientClick = () => dispatch(openDetailsPopup(props._id));
-    const { containerRef, onClick } = useOnIngredientClick(onIngredientClick);
 
     const [{ opacity, isDragging }, ref] = useDrag({
         type: "ingredient",
@@ -75,12 +75,12 @@ const Ingredient = (props: IIngredient) => {
     }
 
     return (
-        <li ref={dropTarget as any} className={styles.listItem}>
+        <li ref={dropTarget as any} className={cn(styles.listItem, "pr-4 pl-4 mb-1")}>
             <div className={styles.item} ref={ref as any}>
                 <button className={styles.button}>
                     <DragIcon type="primary" />
                 </button>
-                <div className={styles.ingredientContainer} onClick={onClick} ref={containerRef} style={{ opacity }}>
+                <div className={styles.ingredientContainer} style={{ opacity }}>
                     <ConstructorElement
                         text={props.count < 2 ? props.name : `${props.name} x${props.count}`}
                         price={props.price}

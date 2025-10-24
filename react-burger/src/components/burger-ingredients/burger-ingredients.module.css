@@ -14,10 +14,6 @@
     composes: mb-5 from global;
 }
 
-.displayFlex {
-    display: flex;
-}
-
 .ingredientsList {
     composes: pl-4 pr-4 from global;
 
@@ -26,6 +22,11 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 32px 24px;
+}
+
+.link {
+    text-decoration: none;
+    color: inherit;
 }
 
 .burgerIngredient {
@@ -49,4 +50,8 @@
 
 .tabLink {
     text-decoration: none;
+}
+
+.displayFlex {
+    display: flex;
 }

@@ -23,10 +23,6 @@
     overflow-y: auto;
 }
 
-.marginTopAuto {
-    margin-top: auto;
-}
-
 .item {
     width: 100%;
     display: flex;
@@ -73,4 +69,8 @@
 .totalCost svg {
     width: 36px;
     height: 36px;
+}
+
+.footer {
+    margin-top: auto;
 }

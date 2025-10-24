@@ -1,52 +1,115 @@
 import React, { useEffect } from "react";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import type { Location } from "react-router-dom";
 
-import AppHeader from "../app-header/app-header";
-import BurgerIngredients from "../burger-ingredients/burger-ingredients";
-import BurgerConstructor from "../burger-constructor/burger-constructor";
+import { ForgotPassword, IngredientPage, Login, Main, NotFound, Profile, Register, ResetPassword } from "../../pages";
+import OrdersFeed from "../../pages/orders-feed/orders-feed";
+
+import ProtectedRoute from "../protected-route/protected-route";
 import Modal from "../modal/modal";
 import IngredientDetails from "../ingredient-details/ingredient-details";
-import styles from "./app.module.css";
 
 import { useAppDispatch, useAppSelector } from "../../services/hooks";
+import { fetchIngredients } from "../../services/slices/ingredients";
 import {
-    closeDetailsPopup,
-    fetchIngredients,
-    resetActiveIngredient,
-    selectActiveIngredient,
-    selectIsDetailsPopupOpen
-} from "../../services/slices/ingredients";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+    selectIsAuthenticated,
+    selectCanResetPassword,
+    selectAuthInitialized,
+    refreshToken,
+    getUser
+} from "../../services/slices/user";
+import AppHeader from "../app-header/app-header";
 
-export const ANIMATION_DURATION = 300; // мс
+type LocState = { background?: Location } | null;
 
 const App = () => {
     const dispatch = useAppDispatch();
-    const activeIngredient = useAppSelector(selectActiveIngredient);
-    const isDetailsPopupOpen = useAppSelector(selectIsDetailsPopupOpen);
+    const navigate = useNavigate();
+
+    const location = useLocation();
+    const state = (location.state as LocState) || null;
+    const background = state?.background;
+
+    const isAuthenticated = useAppSelector(selectIsAuthenticated);
+    const canResetPassword = useAppSelector(selectCanResetPassword);
+    const authReady = useAppSelector(selectAuthInitialized);
 
     useEffect(() => {
-        dispatch(fetchIngredients());
+        (async () => {
+            await dispatch(fetchIngredients()); // грузим список для деталей
+            const rt = await dispatch(refreshToken());
+            if (refreshToken.fulfilled.match(rt)) dispatch(getUser());
+        })();
     }, [dispatch]);
 
-    const onModalClose = () => {
-        dispatch(closeDetailsPopup());
-        setTimeout(() => dispatch(resetActiveIngredient()), ANIMATION_DURATION);
-    };
+    const closeModal = () => navigate(-1);
 
     return (
-        <DndProvider backend={HTML5Backend}>
-            <div className={styles.root}>
-                <AppHeader />
-                <div className={styles.burgerContainer}>
-                    <BurgerIngredients />
-                    <BurgerConstructor />
-                    <Modal open={isDetailsPopupOpen} onClose={onModalClose}>
-                        {activeIngredient && <IngredientDetails ingredient={activeIngredient} />}
-                    </Modal>
-                </div>
-            </div>
-        </DndProvider>
+        <>
+            <AppHeader />
+
+            {/* СТРАНИЦЫ */}
+            <Routes location={background || location}>
+                <Route path="/" element={<Main />} />
+
+                <Route
+                    element={
+                        <ProtectedRoute
+                            isAllowed={!isAuthenticated}
+                            isReady={authReady}
+                            redirectionPath="/"
+                            fallback={null}
+                        />
+                    }>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                </Route>
+
+                <Route
+                    element={
+                        <ProtectedRoute
+                            isAllowed={canResetPassword}
+                            isReady={authReady}
+                            redirectionPath="/"
+                            fallback={null}
+                        />
+                    }>
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                </Route>
+
+                <Route
+                    element={
+                        <ProtectedRoute
+                            isAllowed={isAuthenticated}
+                            isReady={authReady}
+                            redirectionPath="/login"
+                            fallback={null}
+                        />
+                    }>
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/profile/orders" element={<OrdersFeed />} />
+                </Route>
+
+                <Route path="*" element={<NotFound />} />
+
+                <Route path="/ingredients/:id" element={<IngredientDetails />} />
+            </Routes>
+
+            {/* ПОПАПЫ — рендерим только если есть background */}
+            {background && (
+                <Routes>
+                    <Route
+                        path="/ingredients/:id"
+                        element={
+                            <Modal open onClose={closeModal}>
+                                <IngredientDetails />
+                            </Modal>
+                        }
+                    />
+                </Routes>
+            )}
+        </>
     );
 };
 
