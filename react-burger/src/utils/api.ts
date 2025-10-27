@@ -1,8 +1,10 @@
+import { TIngredient } from "../components/app/app.typed";
+
 const API_URL = "https://norma.education-services.ru/api";
 
-export const getResponseData = async (res: Response) => {
+export const getResponseData = async <T>(res: Response): Promise<T> => {
     if (res.ok) {
-        return res.json();
+        return res.json() as Promise<T>;
     }
 
     const data = await res.json();
@@ -13,37 +15,49 @@ export const getResponseData = async (res: Response) => {
     return Promise.reject(new Error(`Ошибка: ${res.status}`));
 };
 
-export const getIngredients = () => fetch(`${API_URL}/ingredients`).then(getResponseData);
-
-export const postOrder = (ingredients: { ingredients: string[] }) =>
-    fetch(`${API_URL}/orders`, {
-        body: JSON.stringify(ingredients),
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).then(getResponseData);
-
-export const register = (data: { email: string; password: string; name: string }) => {
+type TRegisterInput = {
+    email: string;
+    password: string;
+    name: string;
+};
+export type TAuthOutput = {
+    success: boolean;
+    user: {
+        email: string;
+        name: string;
+    };
+    accessToken: string;
+    refreshToken: string;
+};
+export const register = (data: TRegisterInput) => {
     return fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify(data)
-    }).then(getResponseData);
+    }).then((res) => getResponseData<TAuthOutput>(res));
 };
 
-export const login = (data: { email: string; password: string }) => {
+type TLoginInput = {
+    email: string;
+    password: string;
+};
+export const login = (data: TLoginInput) => {
     return fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify(data)
-    }).then(getResponseData);
+    }).then((res) => getResponseData<TAuthOutput>(res));
 };
 
+export type TRefreshTokenOutput = {
+    success: boolean;
+    accessToken: string;
+    refreshToken: string;
+};
 export const refreshToken = (refreshToken: string) => {
     return fetch(`${API_URL}/auth/token`, {
         method: "POST",
@@ -51,7 +65,35 @@ export const refreshToken = (refreshToken: string) => {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({ token: refreshToken })
-    }).then(getResponseData);
+    }).then((res) => getResponseData<TRefreshTokenOutput>(res));
+};
+
+type TGetUserOutput = {
+    success: boolean;
+    user: {
+        email: string;
+        name: string;
+    };
+};
+export const getUser = (accessToken: string) => {
+    return fetch(`${API_URL}/auth/user`, {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`
+        }
+    }).then((res) => getResponseData<TGetUserOutput>(res));
+};
+
+type TPatchUserOutput = TGetUserOutput;
+export const patchUser = (accessToken: string, data: { name: string; email: string }) => {
+    return fetch(`${API_URL}/auth/user`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(data)
+    }).then((res) => getResponseData<TPatchUserOutput>(res));
 };
 
 export const logout = (refreshToken: string) => {
@@ -84,22 +126,22 @@ export const resetPassword = (data: { password: string; token: string }) => {
     }).then(getResponseData);
 };
 
-export const getUser = (accessToken: string) => {
-    return fetch(`${API_URL}/auth/user`, {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`
-        }
-    }).then(getResponseData);
-};
+type TGetIngredientsOutput = { data: TIngredient[]; success: boolean };
+export const getIngredients = () =>
+    fetch(`${API_URL}/ingredients`).then((res) => getResponseData<TGetIngredientsOutput>(res));
 
-export const patchUser = (accessToken: string, data: { name: string; email: string }) => {
-    return fetch(`${API_URL}/auth/user`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`
-        },
-        body: JSON.stringify(data)
-    }).then(getResponseData);
+type TPostOrderOutput = {
+    name: string;
+    order: {
+        number: number;
+    };
+    success: boolean;
 };
+export const postOrder = (ingredients: { ingredients: string[] }) =>
+    fetch(`${API_URL}/orders`, {
+        body: JSON.stringify(ingredients),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then((res) => getResponseData<TPostOrderOutput>(res));
