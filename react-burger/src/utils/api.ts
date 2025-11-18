@@ -1,4 +1,5 @@
 import { TIngredient } from "../components/app/app.typed";
+import { TOrder } from "../services/slices/ws-orders";
 
 const API_URL = "https://norma.education-services.ru/api";
 
@@ -130,18 +131,37 @@ type TGetIngredientsOutput = { data: TIngredient[]; success: boolean };
 export const getIngredients = () =>
     fetch(`${API_URL}/ingredients`).then((res) => getResponseData<TGetIngredientsOutput>(res));
 
-type TPostOrderOutput = {
+export type TPostOrderOutput = {
     name: string;
     order: {
         number: number;
     };
     success: boolean;
 };
-export const postOrder = (ingredients: { ingredients: string[] }) =>
-    fetch(`${API_URL}/orders`, {
+export const postOrder = (ingredients: { ingredients: string[] }, token?: string) => {
+    let url = `${API_URL}/orders`;
+    return fetch(url, {
         body: JSON.stringify(ingredients),
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
         }
     }).then((res) => getResponseData<TPostOrderOutput>(res));
+};
+
+export type TGetOrdersOutput = {
+    success: boolean;
+    orders: TOrder[];
+    total: number;
+    totalToday: number;
+};
+export const fetchOrders = (token?: string) => {
+    let url = `${API_URL}/orders/all`;
+    return fetch(url, {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        }
+    }).then((res) => getResponseData<TGetOrdersOutput>(res));
+};
