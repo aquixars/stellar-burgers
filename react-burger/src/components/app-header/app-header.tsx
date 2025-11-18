@@ -25,10 +25,10 @@ const AppHeader = () => {
                     </NavLink>
 
                     <NavLink
-                        to="/profile/orders"
+                        to="/feed"
                         end
                         className={({ isActive }) => cn(styles.link, { [styles.link_active]: isActive })}>
-                        <ListIcon type={pathname === "/profile/orders" ? "primary" : "secondary"} />
+                        <ListIcon type={pathname === "/feed" ? "primary" : "secondary"} />
                         <p className="text text_type_main-default ml-2">Лента заказов</p>
                     </NavLink>
 

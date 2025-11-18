@@ -6,15 +6,21 @@ import Ingredient from "./components/ingredient/ingredient";
 import Modal from "../modal/modal";
 import OrderDetails from "../order-details/order-details";
 import { useAppDispatch, useAppSelector } from "../../services/hooks";
-import { addIngredient, selectBun, selectMains, selectPrice } from "../../services/slices/ingredients";
+import {
+    addIngredient,
+    clearConstructor,
+    selectBun,
+    selectMains,
+    selectPrice
+} from "../../services/slices/ingredients";
 import styles from "./burger-constructor.module.css";
 import {
-    fetchOrder,
     openOrderPopup,
     closeOrderPopup,
     selectIsOrderPopupOpen,
     selectOrderDetails,
-    selectOrderLoading
+    selectOrderLoading,
+    postOrderThunk
 } from "../../services/slices/order";
 import { useDrop } from "react-dnd";
 import { selectIsAuthenticated } from "../../services/slices/user";
@@ -33,7 +39,7 @@ const BurgerConstructor = () => {
     const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
     const [{ isHover }, dropTarget] = useDrop({
-        accept: "ingredient-from-menu",
+        accept: "order-from-menu",
         collect: (monitor) => ({ isHover: monitor.isOver() }),
         drop(item: any) {
             dispatch(addIngredient(item.id));
@@ -49,8 +55,9 @@ const BurgerConstructor = () => {
         }
 
         const ingredientsIds = [bun, ...mains].map((i) => i._id);
-        dispatch(fetchOrder(ingredientsIds)).then(() => {
+        dispatch(postOrderThunk(ingredientsIds)).then(() => {
             dispatch(openOrderPopup());
+            dispatch(clearConstructor());
         });
     };
 

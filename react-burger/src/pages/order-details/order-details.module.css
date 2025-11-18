@@ -1,0 +1,47 @@
+.root {
+    width: 100%;
+    max-width: 640px;
+    margin: 122px auto 0;
+    margin-top: 0;
+    min-width: 640;
+}
+
+.list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 415px;
+    overflow-y: scroll;
+    width: 750px;
+}
+
+.ingredient {
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+}
+
+.ingredient:not(:last-child) {
+    margin-bottom: 16px;
+}
+
+.title {
+    width: 100%;
+    max-width: 415px;
+}
+
+.priceContainer {
+    display: flex;
+    align-items: center;
+    margin-left: "auto";
+}
+
+.info {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.orderNumber {
+    text-align: "center";
+}

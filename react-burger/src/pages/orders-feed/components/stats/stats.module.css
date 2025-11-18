@@ -1,0 +1,36 @@
+.stats {
+    width: 100%;
+    max-width: 584px;
+}
+
+.ordersStatuses {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 36px;
+    margin-bottom: 60px;
+}
+
+.idsList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.orderId:not(:last-child) {
+    margin-bottom: 8px;
+}
+
+.orderId_highlight {
+    color: #00cccc;
+}
+
+.globalStats:not(:last-child) {
+    margin-bottom: 60px;
+}
+
+.stat {
+    text-shadow:
+        0 0 16px rgba(51, 51, 255, 0.25),
+        0 0 8px rgba(51, 51, 255, 0.25),
+        0 4px 32px rgba(51, 51, 255, 0.5);
+}

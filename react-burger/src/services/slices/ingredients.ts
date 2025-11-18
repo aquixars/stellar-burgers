@@ -23,6 +23,12 @@ interface IIngredientsState {
     dragging: string;
 }
 
+const initialConstructorState = {
+    bun: null,
+    mains: [],
+    price: 0
+};
+
 const initialState: IIngredientsState = {
     // ingredients
     ingredients: [],
@@ -32,11 +38,7 @@ const initialState: IIngredientsState = {
     isDetailsPopupOpen: false,
 
     // constructor
-    constructor: {
-        bun: null,
-        mains: [],
-        price: 0
-    },
+    constructor: initialConstructorState,
     dragging: ""
 };
 
@@ -111,6 +113,9 @@ export const ingredients = createSlice({
                 state.constructor.mains[dragIndex] = state.constructor.mains[hoverIndex];
                 state.constructor.mains[hoverIndex] = temp;
             }
+        },
+        clearConstructor: (state) => {
+            state.constructor = initialConstructorState;
         }
     },
     extraReducers: (builder) => {
@@ -133,9 +138,6 @@ export const selectIngredients = (state: RootState) => {
 };
 export const selectActiveIngredient = (state: RootState) => {
     return state.ingredients.ingredients.find((i) => i._id === state.ingredients.activeIngredientId);
-};
-export const selectIsDetailsPopupOpen = (state: RootState) => {
-    return state.ingredients.isDetailsPopupOpen;
 };
 export const selectBun = (state: RootState) => {
     const bun = state.ingredients.ingredients.find((i) => i._id === state.ingredients.constructor.bun?.id);
@@ -185,7 +187,8 @@ export const {
     deleteIngredient,
     setDragging,
     swapIngredients,
-    setActiveIngredient
+    setActiveIngredient,
+    clearConstructor
 } = actions;
 
 export default reducer;
