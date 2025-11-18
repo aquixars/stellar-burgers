@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import * as api from "../../utils/api";
 import { RootState, AppDispatch } from "../store";
+import { TAuthOutput, TRefreshTokenOutput } from "../../utils/api";
 
 type TUser = {
     name: string;
@@ -39,7 +40,7 @@ const initialState: IUserState = {
     authInitialized: false
 };
 
-export const refreshToken = createAsyncThunk("user/refresh-token", () => {
+export const refreshToken = createAsyncThunk<TRefreshTokenOutput>("user/refresh-token", () => {
     const refreshToken = localStorage.getItem("refresh-token");
 
     if (!refreshToken) {
@@ -61,12 +62,12 @@ export const register = createAsyncThunk("user/register", (data: { name: string;
 
             return { ...data, accessToken: data.accessToken.split("Bearer ")[1] };
         })
-        .catch((err) => {
+        .catch(() => {
             throw new Error("An error occurred");
         });
 });
 
-export const login = createAsyncThunk("user/login", (data: { email: string; password: string }) => {
+export const login = createAsyncThunk<TAuthOutput, { email: string; password: string }>("user/login", (data) => {
     return api.login(data).then((data) => {
         localStorage.setItem("refresh-token", data.refreshToken);
 
@@ -91,7 +92,7 @@ export const forgotPassword = createAsyncThunk("user/forgot-password", (email: s
     return api.forgotPassword(email);
 });
 
-export const getUser = createAsyncThunk<TUser, void, { state: RootState; dispatch: AppDispatch }>(
+export const getUser = createAsyncThunk<TUser | void, void, { state: RootState; dispatch: AppDispatch }>(
     "user/get-user",
     (_, thunkAPI) => {
         const { accessToken } = thunkAPI.getState().user;
@@ -110,7 +111,7 @@ export const getUser = createAsyncThunk<TUser, void, { state: RootState; dispatc
     }
 );
 
-export const patchUser = createAsyncThunk<TUser, TUser, { state: RootState; dispatch: AppDispatch }>(
+export const patchUser = createAsyncThunk<TUser | void, TUser, { state: RootState }>(
     "user/patch-user",
     async (data, thunkAPI) => {
         const { accessToken } = thunkAPI.getState().user;
@@ -125,8 +126,8 @@ export const patchUser = createAsyncThunk<TUser, TUser, { state: RootState; disp
                     const retried = await api.patchUser(newToken, data);
                     return retried.user;
                 }
+                return thunkAPI.rejectWithValue("error");
             }
-            return thunkAPI.rejectWithValue("error");
         }
     }
 );

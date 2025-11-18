@@ -4,11 +4,6 @@ import { getIngredients } from "../../utils/api";
 import { RootState } from "../store";
 import { v4 as uuidv4 } from "uuid";
 
-/** Тип ответа сервера при запросе ингредиентов. */
-type TIngredientResponse = PayloadAction<{
-    data: TIngredient[];
-    success: boolean;
-}>;
 type TIdWithQty = { id: string; qty: number };
 
 interface IIngredientsState {
@@ -67,9 +62,8 @@ export const ingredients = createSlice({
     initialState,
     reducers: {
         // взаимодействие с попапом ингредиента
-        openDetailsPopup: (state, action: PayloadAction<string>) => {
+        openDetailsPopup: (state) => {
             state.isDetailsPopupOpen = true;
-            state.activeIngredientId = action.payload;
         },
         setActiveIngredient: (state, action: PayloadAction<string>) => {
             state.activeIngredientId = action.payload;
@@ -128,9 +122,8 @@ export const ingredients = createSlice({
         builder.addCase(fetchIngredients.pending, (state) => {
             state.ingredientsLoading = true;
         });
-        builder.addCase(fetchIngredients.fulfilled, (state, action: TIngredientResponse) => {
-            const { data } = action.payload;
-            state.ingredients = data;
+        builder.addCase(fetchIngredients.fulfilled, (state, action) => {
+            state.ingredients = action.payload.data;
             state.ingredientsLoading = false;
             state.ingredientsError = false;
         });
