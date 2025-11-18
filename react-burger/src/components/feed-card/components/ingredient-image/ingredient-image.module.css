@@ -6,6 +6,7 @@
     background: linear-gradient(63.18deg, #801ab3 0%, #4c4cff 100%);
     padding: 2px;
     position: relative;
+    margin: 0;
 }
 .ingredient:not(:last-child) {
     margin-left: -15px;

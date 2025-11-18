@@ -4,19 +4,18 @@ import styles from "./ingredient-image.module.css";
 interface IIngredientImage {
     src: string;
     renderDiv?: boolean;
-    style?: React.CSSProperties;
 }
-const IngredientImage = ({ src, renderDiv = false, style }: IIngredientImage) => {
+const IngredientImage = ({ src, renderDiv = false }: IIngredientImage) => {
     if (renderDiv) {
         return (
-            <div style={style} className={styles.ingredient}>
+            <div className={styles.ingredient}>
                 <img className={styles.ingredientImage} src={src} alt="ингредиент" />
             </div>
         );
     }
 
     return (
-        <li style={style} className={styles.ingredient}>
+        <li className={styles.ingredient}>
             <img className={styles.ingredientImage} src={src} alt="ингредиент" />
         </li>
     );

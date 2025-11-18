@@ -29,7 +29,7 @@ const OrdersFeed = () => {
             <div className={styles.root}>
                 <h1 className="text text_type_main-large mt-10 mb-5">Лента заказов</h1>
                 <div className={styles.content}>
-                    {orders ? <Orders data={orders} /> : <div style={{ width: "100%", minWidth: 604 }} />}
+                    {orders ? <Orders data={orders} /> : <div className={styles.noOrders} />}
                     <Stats data={stats} />
                 </div>
             </div>

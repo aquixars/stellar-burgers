@@ -24,10 +24,7 @@ const FeedCard = ({ data }: IFeedCardProps) => {
 
     return (
         <li className={styles.cardContainer}>
-            <Link
-                to={`feed/${data._id}`} // <-- only the path here
-                state={{ background: location }} // <-- state in a separate prop
-                className={styles.card}>
+            <Link to={`/feed/${data.number}`} state={{ background: location }} className={styles.card}>
                 <p className={cn(styles.header, "text text_type_digits-default")}>
                     #{data.number}{" "}
                     <time className="text text_type_main-default text_color_inactive">

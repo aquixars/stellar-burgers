@@ -3,16 +3,7 @@ import React, { useEffect } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import type { Location } from "react-router-dom";
 
-import {
-    ForgotPassword,
-    IngredientPage, // если не используется — можно убрать
-    Login,
-    Main,
-    NotFound,
-    Profile,
-    Register,
-    ResetPassword
-} from "../../pages";
+import { ForgotPassword, Login, Main, NotFound, Profile, Register, ResetPassword } from "../../pages";
 
 import OrdersFeed from "../../pages/orders-feed/orders-feed";
 import OrderDetails from "../../pages/order-details/order-details";
@@ -41,9 +32,9 @@ import AppHeader from "../app-header/app-header";
 
 type LocState = { background?: Location } | null;
 
-const App = () => {
-    dayjs.extend(AdvancedFormat);
+dayjs.extend(AdvancedFormat);
 
+const App = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -75,7 +66,7 @@ const App = () => {
         <>
             <AppHeader />
 
-            {/* СТРАНИЦЫ (фон + обычные) */}
+            {/* ОСНОВНЫЕ СТРАНИЦЫ (фон или обычный роут) */}
             <Routes location={background || location}>
                 {/* публичная главная */}
                 <Route path="/" element={<Main />} />
@@ -124,7 +115,7 @@ const App = () => {
 
                 {/* детальная страница заказа в профиле (как отдельная страница, не модалка) */}
                 <Route
-                    path="/profile/orders/:id"
+                    path="/profile/orders/:number"
                     element={
                         <ProtectedRoute
                             isAllowed={isAuthenticated}
@@ -138,12 +129,9 @@ const App = () => {
                     }
                 />
 
-                {/* общий фид заказов */}
-                <Route path="/feed" element={<OrdersFeed />} />
-
                 {/* детальная страница заказа из фида (как отдельная страница, не модалка) */}
                 <Route
-                    path="/feed/:id"
+                    path="/feed/:number"
                     element={
                         <Layout>
                             <OrderDetails />
@@ -151,39 +139,40 @@ const App = () => {
                     }
                 />
 
+                {/* общий фид заказов */}
+                <Route path="/feed" element={<OrdersFeed />} />
+
                 {/* детальная страница ингредиента как обычная страница */}
                 <Route path="/ingredients/:id" element={<IngredientDetails />} />
 
                 {/* 404 */}
                 <Route path="*" element={<NotFound />} />
-
-                {/* отдельные роуты под модалку для заказов, когда есть background */}
-                {background && (
-                    <Route
-                        path="/profile/orders/:id"
-                        element={
-                            <Modal open={true} onClose={() => onModalClose("/profile/orders")}>
-                                <OrderDetails style={{ marginTop: 0, minWidth: 640 }} />
-                            </Modal>
-                        }
-                    />
-                )}
-
-                {background && (
-                    <Route
-                        path="/feed/:id"
-                        element={
-                            <Modal open={true} onClose={() => onModalClose("/feed")}>
-                                <OrderDetails style={{ marginTop: 0, minWidth: 640 }} />
-                            </Modal>
-                        }
-                    />
-                )}
             </Routes>
 
-            {/* ПОПАПЫ — отдельный <Routes> только для ингредиента, если есть background */}
+            {/* МОДАЛКИ — РЕНДЕРИМ ТОЛЬКО ЕСЛИ ЕСТЬ background */}
             {background && (
                 <Routes>
+                    {/* модалка заказа из профиля */}
+                    <Route
+                        path="/profile/orders/:number"
+                        element={
+                            <Modal open={true} onClose={() => onModalClose("/profile/orders")}>
+                                <OrderDetails />
+                            </Modal>
+                        }
+                    />
+
+                    {/* модалка заказа из фида */}
+                    <Route
+                        path="/feed/:number"
+                        element={
+                            <Modal open={true} onClose={() => onModalClose("/feed")}>
+                                <OrderDetails />
+                            </Modal>
+                        }
+                    />
+
+                    {/* модалка ингредиента */}
                     <Route
                         path="/ingredients/:id"
                         element={

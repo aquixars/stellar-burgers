@@ -63,8 +63,8 @@ const counterReducer = createReducer(initialState, (builder) => {
 export const selectOrders = (state: RootState) => {
     return state.wsOrders.orders;
 };
-export const selectOrderById = (id: string) => (state: RootState) => {
-    return state.wsOrders.orders?.find((o) => o._id === id);
+export const selectOrderByNumber = (number: number) => (state: RootState) => {
+    return state.wsOrders.orders?.find((o) => o.number === number);
 };
 export const selectStats = (state: RootState) => {
     const { total, totalToday } = state.wsOrders;

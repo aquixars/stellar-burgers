@@ -19,7 +19,7 @@ const Order = ({ data }: IOrderProps) => {
 
     return (
         <li className={styles.orderContainer}>
-            <Link className={styles.order} to={`orders/${data._id}`} state={{ background: location }}>
+            <Link className={styles.order} to={`/profile/orders/${data.number}`} state={{ background: location }}>
                 <p className={styles.header}>
                     <span className="text text_type_digits-default">#{data.number}</span>
                     <time className="text text_type_main-default text_color_inactive">
