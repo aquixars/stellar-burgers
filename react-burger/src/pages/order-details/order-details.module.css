@@ -12,11 +12,13 @@
     padding: 0;
     max-height: 415px;
     overflow-y: scroll;
+    width: 750px;
 }
 
 .ingredient {
     display: flex;
     align-items: center;
+    padding-left: 20px;
 }
 
 .ingredient:not(:last-child) {
