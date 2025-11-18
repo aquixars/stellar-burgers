@@ -13,7 +13,7 @@ const Ingredient = (props: IIngredient) => {
     const location = useLocation();
     const count = useAppSelector(selectIngredientQty(props._id));
 
-    const [, ref] = useDrag({ type: "ingredient-from-menu", item: { id: props._id } });
+    const [, ref] = useDrag({ type: "order-from-menu", item: { id: props._id } });
 
     return (
         <Link

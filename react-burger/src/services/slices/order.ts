@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { postOrder } from "../../utils/api";
-import { RootState } from "../store";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { fetchOrders, postOrder, TPostOrderOutput } from "../../utils/api";
+import { AppDispatch, RootState } from "../store";
+import { TOrder, updateOrders } from "./ws-orders";
 
 type TOrderDetails = {
     name: string;
@@ -15,6 +16,9 @@ interface IOrderState {
     orderDetailsLoading: boolean;
     orderDetailsError: boolean;
     isOrderPopupOpen: boolean;
+    activeOrder: TOrder | undefined;
+    orders: TOrder[] | undefined;
+    ordersLoading: boolean;
 }
 
 const initialState: IOrderState = {
@@ -25,14 +29,29 @@ const initialState: IOrderState = {
         },
         success: false
     },
+    activeOrder: undefined,
     orderDetailsLoading: false,
     orderDetailsError: false,
-    isOrderPopupOpen: false
+    isOrderPopupOpen: false,
+    orders: undefined,
+    ordersLoading: false
 };
 
-export const fetchOrder = createAsyncThunk("order/postOrder", (ingredients: string[]) => {
-    return postOrder({ ingredients });
-});
+export const postOrderThunk = createAsyncThunk<TPostOrderOutput, string[], { state: RootState; dispatch: AppDispatch }>(
+    "order/postOrder",
+    (ingredients, thunkAPI) => {
+        const token = thunkAPI.getState().user.accessToken;
+        return postOrder({ ingredients }, token);
+    }
+);
+export const fetchOrdersThunk = createAsyncThunk<void, void, { state: RootState; dispatch: AppDispatch }>(
+    "order/fetchOrders",
+    async (_, thunkAPI) => {
+        const token = thunkAPI.getState().user.accessToken;
+        const orders = await fetchOrders(token);
+        thunkAPI.dispatch(updateOrders(orders.orders));
+    }
+);
 export const order = createSlice({
     name: "order",
     initialState,
@@ -42,18 +61,21 @@ export const order = createSlice({
         },
         closeOrderPopup: (state) => {
             state.isOrderPopupOpen = false;
+        },
+        setActiveOrder: (state, action: PayloadAction<TOrder>) => {
+            state.activeOrder = action.payload;
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(fetchOrder.pending, (state) => {
+        builder.addCase(postOrderThunk.pending, (state) => {
             state.orderDetailsLoading = true;
         });
-        builder.addCase(fetchOrder.fulfilled, (state, action) => {
+        builder.addCase(postOrderThunk.fulfilled, (state, action) => {
             state.orderDetails = action.payload;
             state.orderDetailsLoading = false;
             state.orderDetailsError = false;
         });
-        builder.addCase(fetchOrder.rejected, (state) => {
+        builder.addCase(postOrderThunk.rejected, (state) => {
             state.orderDetailsError = true;
         });
     }
@@ -71,6 +93,6 @@ export const selectIsOrderPopupOpen = (state: RootState) => {
 
 const { actions, reducer } = order;
 
-export const { openOrderPopup, closeOrderPopup } = actions;
+export const { openOrderPopup, closeOrderPopup, setActiveOrder } = actions;
 
 export default reducer;

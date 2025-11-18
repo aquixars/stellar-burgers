@@ -27,7 +27,7 @@ const Ingredient = (props: IIngredient) => {
     const onDeleteClick = () => dispatch(deleteIngredient(props.uniqueId ?? ""));
 
     const [{ opacity, isDragging }, ref] = useDrag({
-        type: "ingredient",
+        type: "order",
         item: { id: props._id },
         collect: (monitor) => ({
             opacity: monitor.isDragging() ? 0.5 : 1,
@@ -36,7 +36,7 @@ const Ingredient = (props: IIngredient) => {
     });
 
     const [{ isHover, target }, dropTarget] = useDrop({
-        accept: "ingredient",
+        accept: "order",
         collect: (monitor) => ({
             isHover: monitor.isOver(),
             target: monitor.getItem()

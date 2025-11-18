@@ -193,6 +193,10 @@ export const selectCanResetPassword = (state: RootState) => {
 };
 export const selectAuthInitialized = (state: RootState) => state.user.authInitialized;
 
+export const selectAccessToken = (state: RootState) => {
+    return state.user.accessToken;
+};
+
 const { actions, reducer } = user;
 
 export const { allowPasswordReset, restrictPasswordReset } = actions;
