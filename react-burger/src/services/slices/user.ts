@@ -141,6 +141,9 @@ export const user = createSlice({
         },
         restrictPasswordReset: (state) => {
             state.canResetPassword = false;
+        },
+        setAuthInitialized: (state) => {
+            state.authInitialized = true;
         }
     },
     extraReducers: (builder) => {
@@ -270,6 +273,6 @@ export const selectAccessToken = (state: RootState) => {
 
 const { actions, reducer } = user;
 
-export const { allowPasswordReset, restrictPasswordReset } = actions;
+export const { allowPasswordReset, restrictPasswordReset, setAuthInitialized } = actions;
 
 export default reducer;
