@@ -176,7 +176,7 @@ const App = () => {
                     <Route
                         path="/ingredients/:id"
                         element={
-                            <Modal open={true} onClose={() => onModalClose("/")}>
+                            <Modal open={true} onClose={() => onModalClose("/")} id="ingredientModal">
                                 <IngredientDetails />
                             </Modal>
                         }

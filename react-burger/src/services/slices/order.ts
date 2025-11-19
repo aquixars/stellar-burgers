@@ -21,7 +21,7 @@ interface IOrderState {
     ordersLoading: boolean;
 }
 
-const initialState: IOrderState = {
+export const initialState: IOrderState = {
     orderDetails: {
         name: "",
         order: {

@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 
 type TIdWithQty = { id: string; qty: number };
 
-interface IIngredientsState {
+export interface IIngredientsState {
     // ingredients
     ingredients: TIngredient[];
     ingredientsLoading: boolean;
@@ -23,13 +23,13 @@ interface IIngredientsState {
     dragging: string;
 }
 
-const initialConstructorState = {
+export const initialConstructorState = {
     bun: null,
     mains: [],
     price: 0
 };
 
-const initialState: IIngredientsState = {
+export const initialState: IIngredientsState = {
     // ingredients
     ingredients: [],
     ingredientsLoading: false,
@@ -42,7 +42,7 @@ const initialState: IIngredientsState = {
     dragging: ""
 };
 
-const countPrice = (state: IIngredientsState) => {
+export const countPrice = (state: IIngredientsState) => {
     const ingredientsToCount = [...state.constructor.mains];
     if (state.constructor.bun) {
         ingredientsToCount.push(state.constructor.bun as any);
