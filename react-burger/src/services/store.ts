@@ -4,6 +4,7 @@ import ingredientsReducer from "./slices/ingredients";
 import orderReducer from "./slices/order";
 import userReducer from "./slices/user";
 import wsOrderReducer, { WS_ORDER_ACTIONS } from "./slices/ws-orders";
+import logger from "redux-logger";
 
 export const store = configureStore({
     reducer: {
@@ -14,7 +15,8 @@ export const store = configureStore({
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
-            socketMiddleware("wss://norma.education-services.ru/orders/all", WS_ORDER_ACTIONS)
+            socketMiddleware("wss://norma.education-services.ru/orders/all", WS_ORDER_ACTIONS),
+            logger
         )
 });
 

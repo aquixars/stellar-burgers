@@ -25,7 +25,8 @@ import {
     selectCanResetPassword,
     selectAuthInitialized,
     refreshToken,
-    getUser
+    getUser,
+    setAuthInitialized
 } from "../../services/slices/user";
 
 import AppHeader from "../app-header/app-header";
@@ -50,10 +51,17 @@ const App = () => {
         (async () => {
             // грузим список ингредиентов
             await dispatch(fetchIngredients());
-            // обновляем токен и, если всё ок, подтягиваем юзера
-            const rt = await dispatch(refreshToken());
-            if (refreshToken.fulfilled.match(rt)) {
-                dispatch(getUser());
+
+            try {
+                // пробуем обновить токен
+                const rt = await dispatch(refreshToken());
+                if (refreshToken.fulfilled.match(rt)) {
+                    // если токен обновился — тянем юзера
+                    await dispatch(getUser());
+                }
+            } finally {
+                // в любом случае (успех/ошибка) считаем авторизацию инициализированной
+                dispatch(setAuthInitialized());
             }
         })();
     }, [dispatch]);
@@ -176,7 +184,7 @@ const App = () => {
                     <Route
                         path="/ingredients/:id"
                         element={
-                            <Modal open={true} onClose={() => onModalClose("/")}>
+                            <Modal open={true} onClose={() => onModalClose("/")} id="ingredientModal">
                                 <IngredientDetails />
                             </Modal>
                         }

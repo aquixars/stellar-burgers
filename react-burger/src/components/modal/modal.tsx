@@ -9,6 +9,7 @@ import styles from "./modal.module.css";
 const modalRoot = document.getElementById("react-modals")!;
 
 interface IModal {
+    id?: string;
     open: boolean;
     onClose: () => void;
     children: React.ReactNode;
@@ -30,7 +31,7 @@ const Modal = (props: IModal) => {
         <>
             <div className={cn(styles.root, { [styles.root_open]: props.open })}>
                 <ModalOverlay onClose={props.onClose} />
-                <div className={styles.content}>
+                <div id={props.id} className={styles.content}>
                     <button className={styles.closeButton} onClick={props.onClose}>
                         <CloseIcon type="primary" />
                     </button>

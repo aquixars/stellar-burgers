@@ -1,7 +1,7 @@
 import { TIngredient } from "../components/app/app.typed";
 import { TOrder } from "../services/slices/ws-orders";
 
-const API_URL = "https://norma.education-services.ru/api";
+export const API_URL = "https://norma.education-services.ru/api";
 
 export const getResponseData = async <T>(res: Response): Promise<T> => {
     if (res.ok) {
